@@ -1,4 +1,4 @@
-const CACHE = "nemet-hang-v3";
+const CACHE = "nemet-hang-v4";
 const ASSETS = [
   "./",
   "./index.html",
