@@ -18,8 +18,9 @@
 
     <section class="card card-info">
       <p class="info-text" id="data-info">
-        Első betöltés: kb. 150–200 KB. Utána a hang a telefonodról jön – <strong>lejátszás közben 0 KB</strong> internet.
-        Wi‑Fi-n érdemes egyszer megnyitni; utána mobilneten is használható (gyorsítótár).
+        Első betöltés: kb. 150–200 KB. Lejátszás közben <strong>0 KB</strong> internet.<br>
+        <strong>Képernyőzár:</strong> iPhone-on általában megáll. Androidon néha megy tovább.
+        Legbiztosabb: „Képernyő ébren” bekapcsolva, vagy gyenge fényerő – ne zárd le a telefont.
       </p>
     </section>
 
@@ -37,6 +38,14 @@
       <label class="check-row">
         <input type="checkbox" id="shuffle" checked>
         <span>Kevert sorrend (minden körben más véletlen sorrend)</span>
+      </label>
+      <label class="check-row">
+        <input type="checkbox" id="wake-lock" checked>
+        <span>Képernyő ébren tartása lejátszás alatt (akku kímélés: gyenge fény)</span>
+      </label>
+      <label class="check-row">
+        <input type="checkbox" id="bg-audio" checked>
+        <span>Háttér támogatás (Android – segít zártd képernyőn is)</span>
       </label>
       <div class="status-box">
         <div class="time-left" id="time-left">Kész – indítás a gombokkal</div>
