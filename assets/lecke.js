@@ -4,6 +4,9 @@
   const phrases = typeof PHRASES !== "undefined" ? PHRASES : [];
   let stopFlag = false;
   let voices = [];
+  let wakeLock = null;
+  let keepAliveAudio = null;
+  let sessionActive = false;
 
   const el = {
     count: $("#phrase-count"),
@@ -13,6 +16,8 @@
     stop: $("#btn-stop"),
     untilStop: $("#until-stop"),
     shuffle: $("#shuffle"),
+    wakeLock: $("#wake-lock"),
+    bgAudio: $("#bg-audio"),
     repeats: $("#repeats"),
     hours: $("#hours"),
     minutes: $("#minutes"),
@@ -157,6 +162,71 @@
     });
   }
 
+  async function acquireWakeLock() {
+    if (!el.wakeLock?.checked || !("wakeLock" in navigator)) return;
+    try {
+      wakeLock = await navigator.wakeLock.request("screen");
+    } catch (_) {
+      /* jogosultság / nem támogatott */
+    }
+  }
+
+  async function releaseWakeLock() {
+    if (!wakeLock) return;
+    try {
+      await wakeLock.release();
+    } catch (_) {
+      /* */
+    }
+    wakeLock = null;
+  }
+
+  function startBackgroundAudio() {
+    if (!el.bgAudio?.checked) return;
+    try {
+      if (!keepAliveAudio) {
+        keepAliveAudio = new Audio();
+        // Apró, néma hurok – Androidon „médialejátszás”, így kevésbé alszik el a lap
+        keepAliveAudio.src =
+          "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+        keepAliveAudio.loop = true;
+        keepAliveAudio.volume = 0.02;
+      }
+      keepAliveAudio.play().catch(() => {});
+    } catch (_) {
+      /* */
+    }
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: "Német kifejezések",
+        artist: "Felolvasás",
+      });
+      navigator.mediaSession.playbackState = "playing";
+    }
+  }
+
+  function stopBackgroundAudio() {
+    if (keepAliveAudio) {
+      keepAliveAudio.pause();
+      keepAliveAudio.currentTime = 0;
+    }
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = "none";
+    }
+  }
+
+  async function startPlaybackSession() {
+    sessionActive = true;
+    await acquireWakeLock();
+    startBackgroundAudio();
+  }
+
+  async function endPlaybackSession() {
+    sessionActive = false;
+    stopBackgroundAudio();
+    await releaseWakeLock();
+  }
+
   function getDurationSec() {
     const h = Math.max(0, Math.min(24, parseInt(el.hours.value, 10) || 0));
     const m = Math.max(0, Math.min(59, parseInt(el.minutes.value, 10) || 0));
@@ -185,6 +255,7 @@
     stopFlag = false;
     setUiPlaying(true);
     speechSynthesis.cancel();
+    await startPlaybackSession();
 
     try {
       let index = 0;
@@ -249,6 +320,8 @@
       setStatus("Hiba", String(err.message || err), 0);
       alert("Hiba: " + (err.message || err));
     } finally {
+      speechSynthesis.cancel();
+      await endPlaybackSession();
       setUiPlaying(false);
     }
   }
@@ -290,6 +363,12 @@
     stopFlag = true;
     speechSynthesis.cancel();
     setStatus("Leállítás…", "", 0);
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && sessionActive && el.wakeLock?.checked) {
+      acquireWakeLock();
+    }
   });
 
   bindRanges();
