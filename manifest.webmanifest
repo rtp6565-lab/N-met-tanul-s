@@ -1,0 +1,10 @@
+{
+  "name": "Német kifejezések hangosan",
+  "short_name": "Német HU-DE",
+  "description": "Magyar–német kifejezések – kevés adat, offline barát",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f1419",
+  "theme_color": "#3d9a6a",
+  "lang": "hu"
+}

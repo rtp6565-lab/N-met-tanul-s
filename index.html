@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#3d9a6a">
+  <meta name="description" content="Magyar–német kifejezések felolvasása – kevés mobiladat, offline is mehet.">
+  <title>Német kifejezések hangosan</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Német kifejezések hangosan</h1>
+      <p><span id="phrase-count">…</span> kifejezés · <span class="badge-lowdata">alacsony adatforgalom</span></p>
+    </header>
+
+    <section class="card card-info">
+      <p class="info-text" id="data-info">
+        Első betöltés: kb. 150–200 KB. Utána a hang a telefonodról jön – <strong>lejátszás közben 0 KB</strong> internet.
+        Wi‑Fi-n érdemes egyszer megnyitni; utána mobilneten is használható (gyorsítótár).
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Lejátszás</h2>
+      <div class="play-bar">
+        <button type="button" class="btn btn-primary" id="btn-start">▶ Lejátszás indítása</button>
+        <button type="button" class="btn btn-secondary" id="btn-round">↻ Egy kör</button>
+        <button type="button" class="btn btn-danger" id="btn-stop" disabled>■ Leállítás</button>
+      </div>
+      <label class="check-row">
+        <input type="checkbox" id="until-stop" checked>
+        <span>Amíg meg nem állítom (a lista végén újrakezdi)</span>
+      </label>
+      <label class="check-row">
+        <input type="checkbox" id="shuffle" checked>
+        <span>Kevert sorrend (minden körben más véletlen sorrend)</span>
+      </label>
+      <div class="status-box">
+        <div class="time-left" id="time-left">Kész – indítás a gombokkal</div>
+        <div class="progress"><div id="progress-bar"></div></div>
+        <div class="detail" id="status-detail"></div>
+      </div>
+      <p class="hint" id="voice-hint" style="margin-top:0.75rem"></p>
+    </section>
+
+    <section class="card">
+      <h2>Beállítások</h2>
+      <div class="grid-2">
+        <div>
+          <label for="repeats">Egy kifejezés ismétlése (magyar + német = 1×)</label>
+          <input type="number" id="repeats" min="1" max="20" value="2">
+        </div>
+        <div>
+          <label>Meddig játsszon (ha nincs pipa fent)</label>
+          <div class="grid-2">
+            <div>
+              <label for="hours">Óra</label>
+              <input type="number" id="hours" min="0" max="24" value="1">
+            </div>
+            <div>
+              <label for="minutes">Perc</label>
+              <input type="number" id="minutes" min="0" max="59" value="0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem">
+        <label>Magyar és német között</label>
+        <div class="range-row">
+          <input type="range" id="pause-lang" min="0" max="5" step="0.1" value="0.8"
+            data-range-label="pause-lang-val">
+          <span class="range-val" id="pause-lang-val">0.8 mp</span>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem">
+        <label>Kifejezések között</label>
+        <div class="range-row">
+          <input type="range" id="pause-phrase" min="0" max="15" step="0.1" value="2"
+            data-range-label="pause-phrase-val">
+          <span class="range-val" id="pause-phrase-val">2.0 mp</span>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem">
+        <label>Hang indulása előtt (ms) – Bluetoothnál növeld</label>
+        <div class="range-row">
+          <input type="range" id="bt-delay" min="0" max="2000" step="50" value="300"
+            data-range-label="bt-delay-val">
+          <span class="range-val" id="bt-delay-val">300 ms</span>
+        </div>
+      </div>
+
+      <div style="margin-top:1rem">
+        <label>Beszéd tempó</label>
+        <div class="range-row">
+          <input type="range" id="speed" min="-40" max="40" step="5" value="0"
+            data-range-label="speed-val">
+          <span class="range-val" id="speed-val">Normál</span>
+        </div>
+      </div>
+    </section>
+
+    <p class="note">
+      Telefon: Chrome vagy Safari. Magyar/német hang: telefon beállítások → beszéd / szövegfelolvasás → hangok letöltése.<br>
+      Főoldal: <code>index.html</code> · GitHub Pages-re készült (PHP nélkül).
+    </p>
+  </div>
+  <script src="phrases.js"></script>
+  <script src="assets/lecke.js"></script>
+</body>
+</html>
