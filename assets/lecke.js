@@ -16,6 +16,8 @@
     stop: $("#btn-stop"),
     untilStop: $("#until-stop"),
     shuffle: $("#shuffle"),
+    pairDe: $("#pair-de"),
+    pairEn: $("#pair-en"),
     wakeLock: $("#wake-lock"),
     bgAudio: $("#bg-audio"),
     repeats: $("#repeats"),
@@ -117,8 +119,20 @@
     });
   }
 
+  function getPairMode() {
+    return el.pairEn?.checked ? "en" : "de";
+  }
+
+  function secondPhrase(phrase) {
+    return getPairMode() === "en" ? phrase.angol || phrase.nemet : phrase.nemet;
+  }
+
+  function secondLangTag() {
+    return getPairMode() === "en" ? "EN" : "DE";
+  }
+
   function pickVoice(langCode) {
-    const want = langCode === "hu" ? "hu" : "de";
+    const want = langCode === "hu" ? "hu" : langCode === "en" ? "en" : "de";
     const list = voices.filter((v) => v.lang.toLowerCase().startsWith(want));
     return list[0] || voices.find((v) => v.lang.toLowerCase().includes(want)) || null;
   }
@@ -140,7 +154,8 @@
       const run = () => {
         speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
-        u.lang = lang === "hu" ? "hu-HU" : "de-DE";
+        u.lang =
+          lang === "hu" ? "hu-HU" : lang === "en" ? "en-GB" : "de-DE";
         u.rate = speechRate();
         const voice = pickVoice(lang);
         if (voice) u.voice = voice;
@@ -266,7 +281,9 @@
       while (Date.now() < endTime && !stopFlag) {
         const phrase = queue[index];
         const hu = phrase.magyar;
-        const de = phrase.nemet;
+        const second = secondPhrase(phrase);
+        const pairTag = secondLangTag();
+        const pairLang = getPairMode();
 
         for (let rep = 1; rep <= repeats; rep++) {
           if (stopFlag || Date.now() >= endTime) break;
@@ -286,7 +303,7 @@
 
           setStatus(
             timeText,
-            `[${roundNum}. kör] #${index + 1}  ${rep}/${repeats}\nHU: ${hu}\nDE: ${de}`,
+            `[${roundNum}. kör] #${index + 1}  ${rep}/${repeats}\nHU: ${hu}\n${pairTag}: ${second}`,
             pct
           );
 
@@ -294,7 +311,7 @@
           if (stopFlag || Date.now() >= endTime) break;
           if (!(await sleep(pauseLang))) break;
 
-          await speak(de, "de");
+          await speak(second, pairLang);
           if (stopFlag || Date.now() >= endTime) break;
           if (rep < repeats && !(await sleep(pauseLang))) break;
         }
@@ -329,11 +346,14 @@
   function showVoiceInfo() {
     const hu = pickVoice("hu");
     const de = pickVoice("de");
+    const en = pickVoice("en");
     const parts = [];
     if (hu) parts.push(`HU: ${hu.name}`);
-    else parts.push("HU: (alapértelmezett – érdemes magyar hangot telepíteni)");
+    else parts.push("HU: (telepíts magyar hangot)");
     if (de) parts.push(`DE: ${de.name}`);
-    else parts.push("DE: (alapértelmezett – érdemes német hangot telepíteni)");
+    else parts.push("DE: (telepíts német hangot)");
+    if (en) parts.push(`EN: ${en.name}`);
+    else parts.push("EN: (telepíts angol hangot)");
     el.voiceHint.textContent = "Hangok: " + parts.join(" · ");
   }
 
